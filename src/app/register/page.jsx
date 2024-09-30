@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-const page = () => {
+const Page = () => {
 
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -133,4 +133,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
