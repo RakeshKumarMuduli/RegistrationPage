@@ -44,7 +44,7 @@ export default function LoginPage() {
     <div className="h-screen bg-cover bg-center flex justify-center items-center  bg-gray-100" style={{ backgroundImage: "url('/com.jpg')" }}>
       <div className="bg-cover  p-5 max-w-md w-full rounded-lg shadow-md bg-transparent" style={{ backgroundImage: "url('')" }}>
         <Image src="/numetry.jpeg" alt="" width={50} height={50} className='mb-2 rounded-md'></Image>
-        <h1 className='text-3xl font-semibold mb-2 text-pink-500 '>Welcome Back!</h1>
+        <h1 className='text-3xl font-semibold mb-2 text-pink-500 '>Welcome Back</h1>
         <p className='text-yellow-600 mb-5'>Enter to get unlimited access to data</p>
         
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -102,7 +102,7 @@ export default function LoginPage() {
         </form>
         <div className='mt-4 flex flex-row ml-5'>
           <div className='border-black h-5 border-b-2 w-1/3'></div>
-          <div className='w-fit p-2 text-center text-sm'>Or  Login With</div>
+          <div className='w-fit p-2 text-center text-sm'>Or &apos; Login With</div>
           <div className='border-black h-5 border-b-2 w-1/3'></div>
         </div>
         <div className='flex flex-row justify-center border-2 rounded-lg mt-2 p-1'>
@@ -114,7 +114,7 @@ export default function LoginPage() {
           <a className='mt-2 cursor-pointer' href='/'>Sign up with Facebook</a>
         </div>
        
-        <p className='mt-5 font-medium text-center'> Don't have an account? <a href="/register" className='text-blue-700 underline cursor-pointer'>Register here</a></p>
+        <p className='mt-5 font-medium text-center'> Don&apos;t have an account? <a href="/register" className='text-blue-700 underline cursor-pointer'>Register here</a></p>
       </div>
     </div>
   );
