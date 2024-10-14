@@ -11,34 +11,45 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({});
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-
+    
     let errors = {};
-   
-    const passwordRegex = /^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{3,20}$/; 
     const emailRegex = /^[^\s@]+@[^\s@]+\.com$/;
-
-
+    const passwordRegex = /^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{3,20}$/;
+  
     if (!emailRegex.test(email)) {
-      errors.email = "Invalid email format and Only .com domains are allowed.";
+      errors.email = "Invalid email format.";
     }
-
     
     if (!passwordRegex.test(password)) {
-      errors.password =
-        "Password must be 3-20 characters &  one special character.";
+      errors.password = "Password must be 3-20 characters with one special character.";
     }
-
+  
     setErrors(errors);
-
+  
     if (Object.keys(errors).length === 0) {
-      alert("Login Succesfully !!!!!!!!!!!!!!")
-    } 
-
-    
+      try {
+        const response = await fetch('http://localhost:3500/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          localStorage.setItem('token', data.token);  
+          alert('Login successful');
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error('Login failed:', error);
+      }
+    }
   };
+  
 
   return (
     <div className="h-screen bg-cover bg-center flex justify-center items-center  bg-gray-100" style={{ backgroundImage: "url('/com.jpg')" }}>

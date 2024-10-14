@@ -6,66 +6,91 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phone: "",
+  });
 
-  const handleSubmit = (e) => {
+  // Handle form field changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  // Function to handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      confirmPassword,
-      phone,
-      term,
-    } = e.target.elements;
+    const { firstName, lastName, email, password, confirmPassword, phone, term } = formData;
 
     let errors = {};
-    const nameRegex = /^[A-Za-z]+$/; 
-    const passwordRegex = /^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{3,20}$/; 
+    const nameRegex = /^[A-Za-z]+$/;
+    const passwordRegex = /^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{3,20}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.com$/;
-    const phoneRegex = /^\d{10}$/; 
+    const phoneRegex = /^\d{10}$/;
 
-    
-    if (!nameRegex.test(firstName.value)) {
-      errors.firstName = "First name must have only letters!!!";
+    if (!nameRegex.test(firstName)) {
+      errors.firstName = "First name must have only letters!";
     }
 
-    
-    if (!nameRegex.test(lastName.value)) {
-      errors.lastName = "Last name must have only letters !!!";
+    if (!nameRegex.test(lastName)) {
+      errors.lastName = "Last name must have only letters!";
     }
 
-    
-    if (!emailRegex.test(email.value)) {
-      errors.email = "Invalid email format and Only .com domains are allowed.";
+    if (!emailRegex.test(email)) {
+      errors.email = "Invalid email format. Only .com domains are allowed.";
     }
 
-    
-    if (!passwordRegex.test(password.value)) {
+    if (!passwordRegex.test(password)) {
       errors.password =
-        "Password must be 3-20 characters &  one special character.";
+        "Password must be 3-20 characters & contain one special character.";
     }
 
-    
-    if (password.value !== confirmPassword.value) {
+    if (password !== confirmPassword) {
       errors.confirmPassword = "Passwords do not match.";
     }
 
-    
-    if (!phoneRegex.test(phone.value)) {
+    if (!phoneRegex.test(phone)) {
       errors.phone = "Phone number must be 10 digits.";
     }
 
-    if (!term.checked) {
-      errors.term = "please agree the Terms & Conditions.";
+    if (!term) {
+      errors.term = "Please agree to the Terms & Conditions.";
     }
 
     setErrors(errors);
 
     if (Object.keys(errors).length === 0) {
-      setSuccessMessage("Form submitted successfully!!!!!!");
-    } else {
-      setSuccessMessage("");
+      // Send the data to the backend
+      try {
+        const response = await fetch("http://localhost:3500/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+          setSuccessMessage("Form submitted successfully!");
+
+          // Clear the form fields
+          setFormData({
+            firstName: "",
+            lastName: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+            phone: "",
+          });
+        } else {
+          setSuccessMessage("Form submission failed.");
+        }
+      } catch (error) {
+        setSuccessMessage(`Error: ${error.message}`);
+      }
     }
   };
 
@@ -87,6 +112,8 @@ export default function Home() {
             <input
               name="firstName"
               type="text"
+              value={formData.firstName}
+              onChange={handleChange}
               placeholder="First Name"
               className="w-full px-3 bg-transparent py-2 border border-pink-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -102,6 +129,8 @@ export default function Home() {
             <input
               name="lastName"
               type="text"
+              value={formData.lastName}
+              onChange={handleChange}
               placeholder="Last Name"
               className="w-full px-3 py-2 border bg-transparent border-pink-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -117,35 +146,37 @@ export default function Home() {
             <input
               name="email"
               type="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="Email"
               className="w-full px-3 py-2 border bg-transparent border-pink-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {errors.email && <p className="text-red-600">{errors.email}</p>}
           </div>
 
-          <div className="mb-2 relative ">
+          <div className="mb-2 relative">
             <label className="block text-gray-700 text-sm font-bold mb-2 font-serif">
               Password
             </label>
             <input
               name="password"
               type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Password"
               className="w-full px-3 py-2 border bg-transparent border-pink-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)} 
-              className="absolute inset-y-0 right-0  p-3 mt-7  text-sm text-black "
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 p-3 mt-7 text-sm text-black"
             >
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>
           {errors.password && (
-              <p className="text-red-600 mb-2">{errors.password}</p>
-            )}
+            <p className="text-red-600 mb-2">{errors.password}</p>
+          )}
 
           <div className="mb-2">
             <label className="block text-gray-700 text-sm font-bold mb-2 font-serif">
@@ -154,6 +185,8 @@ export default function Home() {
             <input
               name="confirmPassword"
               type="password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
               placeholder="Confirm Password"
               className="w-full px-3 py-2 border bg-transparent border-pink-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -168,46 +201,52 @@ export default function Home() {
             </label>
             <input
               name="phone"
-              type="tel"
-              placeholder="+91"
-              className="mt-1 p-2 w-full border bg-transparent border-pink-500 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              type="text"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Phone Number"
+              className="w-full px-3 py-2 border bg-transparent border-pink-500 rounded-lg"
             />
             {errors.phone && <p className="text-red-600">{errors.phone}</p>}
           </div>
 
-          <div className="mb-2">
-            <label className="block text-sm font-bold text-gray-700 font-serif">
+          <div className="mb-4">
+            <label className="inline-flex items-center">
               <input
                 name="term"
                 type="checkbox"
-                className="mr-2 leading-tight accent-violet-800"
+                onChange={(e) =>
+                  setFormData({ ...formData, term: e.target.checked })
+                }
+                className="w-5 h-5 border-pink-500 rounded-md text-indigo-600 focus:ring-0"
               />
-              I agree to the Terms & Conditions
+              <span className="ml-2 text-black font-serif">
+                I agree to the Terms & Conditions
+              </span>
             </label>
             {errors.term && <p className="text-red-600">{errors.term}</p>}
           </div>
 
-          <div className="mt-4">
-            <button
-              type="submit"
-              className="w-full px-4 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              Create Account
-            </button>
-          </div>
-          <div className="font-serif mt-2 text-center">
+          <button
+            type="submit"
+            className="w-full px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-800"
+          >
+            Submit
+          </button>
+        </form>
+        <div className="font-serif mt-2 text-center">
             Already have an account?{" "}
             <a href="/login" className="text-blue-600 hover:underline">
               Sign In
             </a>
           </div>
-        </form>
-
         {successMessage && (
           <div className="mt-4 p-2 bg-green-100 text-green-800 rounded-md text-center text-xl font-medium">
             {successMessage}
           </div>
         )}
+
+        <div id="recaptcha-container"></div>
       </div>
     </div>
   );
